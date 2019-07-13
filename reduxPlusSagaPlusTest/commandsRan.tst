@@ -16,3 +16,11 @@ $ npm install karma --save-dev
 
 # Install plugins that your project needs:
 $ npm install karma-jasmine karma-chrome-launcher karma-firefox-launcher  jasmine-core --save-dev
+
+
+
+This is for Cypress io
+
+npm install cypress --save-dev @cypress/webpack-preprocessor typescript ts-loader
+# If this is from a blank project 
+npm install cypress webpack @cypress/webpack-preprocessor typescript ts-loader

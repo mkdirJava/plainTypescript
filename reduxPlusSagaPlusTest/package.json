@@ -5,12 +5,16 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "karma": "./node_modules/karma/bin/karma start"
+    "karma": "./node_modules/karma/bin/karma start",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@cypress/webpack-preprocessor": "^4.1.0",
     "@types/jest": "^24.0.15",
+    "cypress": "^3.4.0",
     "jasmine-core": "^3.4.0",
     "jest": "^24.8.0",
     "karma": "^4.2.0",
@@ -18,8 +22,9 @@
     "karma-firefox-launcher": "^1.1.0",
     "karma-jasmine": "^2.0.1",
     "ts-jest": "^24.0.2",
+    "ts-loader": "^6.0.4",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.3"
   },
   "dependencies": {
     "redux": "^4.0.1"
