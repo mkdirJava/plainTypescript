@@ -1,0 +1,398 @@
+From 409a664751d4efa525b21d6fd45dc8b3a776787f Mon Sep 17 00:00:00 2001
+From: mkdirJava <mkdirjava@gmail.com>
+Date: Sat, 6 Jul 2019 09:34:01 +0100
+Subject: [PATCH 1/4]  added in redux to plain typescript project
+
+---
+ actions/actions.ts       | 13 +++++++++++++
+ index.ts                 |  8 ++++----
+ interfaces/interfaces.ts |  5 +++++
+ package.json             |  3 +++
+ reducers/reducer.ts      | 28 ++++++++++++++++++++++++++++
+ tsconfig.json            |  2 +-
+ 6 files changed, 54 insertions(+), 5 deletions(-)
+ create mode 100644 actions/actions.ts
+ create mode 100644 interfaces/interfaces.ts
+ create mode 100644 reducers/reducer.ts
+
+diff --git a/actions/actions.ts b/actions/actions.ts
+new file mode 100644
+index 0000000..2b49326
+--- /dev/null
++++ b/actions/actions.ts
+@@ -0,0 +1,13 @@
++import { Action } from 'redux';
++
++export interface ITodoAction extends Action {
++    todo:string;
++}
++
++export const ADD_TODO:string = 'ADD_TODO';
++export default function addTodo(todo:string):ITodoAction {
++    return {
++        type: ADD_TODO,
++        todo
++    };
++}
+\ No newline at end of file
+diff --git a/index.ts b/index.ts
+index 0016c6e..354461c 100644
+--- a/index.ts
++++ b/index.ts
+@@ -1,7 +1,7 @@
+-const world = '🗺️';
++import { createStore } from 'redux';
++import todoReducer from './reducers/reducer';
+ 
+-export function hello(word: string = world): string {
+-  return `Hello ${world}! `;
+-}
++export const store = createStore(todoReducer);
+ 
++console.log(store.getState());
+ console.log("hi there world")
+\ No newline at end of file
+diff --git a/interfaces/interfaces.ts b/interfaces/interfaces.ts
+new file mode 100644
+index 0000000..c7c0dd2
+--- /dev/null
++++ b/interfaces/interfaces.ts
+@@ -0,0 +1,5 @@
++export interface ITodo {
++    id:number;
++    todo:string;
++    completed:boolean;
++}
+\ No newline at end of file
+diff --git a/package.json b/package.json
+index d1264f7..36741ae 100644
+--- a/package.json
++++ b/package.json
+@@ -11,5 +11,8 @@
+   "devDependencies": {
+     "tslint": "^5.18.0",
+     "typescript": "^3.5.2"
++  },
++  "dependencies": {
++    "redux": "^4.0.1"
+   }
+ }
+diff --git a/reducers/reducer.ts b/reducers/reducer.ts
+new file mode 100644
+index 0000000..1e7edfb
+--- /dev/null
++++ b/reducers/reducer.ts
+@@ -0,0 +1,28 @@
++import { Reducer } from 'redux';
++import { ITodo } from '../interfaces/interfaces';
++import { ITodoAction, ADD_TODO } from '../actions/actions';
++
++let id:number = 0;
++const generateId = ():number => id++;
++
++interface ITodoState {
++    todos:Array<ITodo>
++};
++
++const defaultState:ITodoState = {
++    todos: []
++};
++
++export default function todoReducer(state:ITodoState = defaultState, action:ITodoAction):ITodoState {
++    switch(action.type) {
++        case ADD_TODO:
++            return Object.assign({}, state, {
++                todos: [
++                    { id: generateId(), text: action.todo, completed: false },
++                    ...state.todos
++                ]
++            });
++        default:
++            return state;
++    }
++}
+\ No newline at end of file
+diff --git a/tsconfig.json b/tsconfig.json
+index df6cb45..c000c9e 100644
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -4,7 +4,7 @@
+     // "incremental": true,                   /* Enable incremental compilation */
+     "target": "es5",                          /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */
+     "module": "commonjs",                     /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
+-    // "lib": [],                             /* Specify library files to be included in the compilation. */
++     "lib": ["es2015", "es2017", "dom"],                             /* Specify library files to be included in the compilation. */
+     // "allowJs": true,                       /* Allow javascript files to be compiled. */
+     // "checkJs": true,                       /* Report errors in .js files. */
+     // "jsx": "preserve",                     /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
+-- 
+2.17.1
+
+
+From 0639a8e12ddad81fc7b4c430f36f0a5cfc89f361 Mon Sep 17 00:00:00 2001
+From: mkdirJava <mkdirjava@gmail.com>
+Date: Sat, 6 Jul 2019 18:58:22 +0100
+Subject: [PATCH 2/4]  added more fields
+
+---
+ actions/actions.ts  | 12 ++++++++----
+ index.ts            | 20 ++++++++++++++++++--
+ reducers/reducer.ts |  7 ++++---
+ 3 files changed, 30 insertions(+), 9 deletions(-)
+
+diff --git a/actions/actions.ts b/actions/actions.ts
+index 2b49326..832c71c 100644
+--- a/actions/actions.ts
++++ b/actions/actions.ts
+@@ -1,13 +1,17 @@
+ import { Action } from 'redux';
+ 
+-export interface ITodoAction extends Action {
++export interface ITodoAction extends Action<any> {
+     todo:string;
+-}
++    priority : string
+ 
++}
+ export const ADD_TODO:string = 'ADD_TODO';
+-export default function addTodo(todo:string):ITodoAction {
++
++export default function addTodo(todo:string, priority: string):ITodoAction {
+     return {
+         type: ADD_TODO,
+-        todo
++        todo: todo,
++        priority : priority
++        
+     };
+ }
+\ No newline at end of file
+diff --git a/index.ts b/index.ts
+index 354461c..038f1d7 100644
+--- a/index.ts
++++ b/index.ts
+@@ -1,7 +1,23 @@
+ import { createStore } from 'redux';
+ import todoReducer from './reducers/reducer';
++import addTodo from './actions/actions';
+ 
+ export const store = createStore(todoReducer);
+ 
+-console.log(store.getState());
+-console.log("hi there world")
+\ No newline at end of file
++
++showState();
++
++console.log("Going to change the state")
++store.dispatch(addTodo('READ',"low"))
++
++showState();
++
++console.log("Going to change the state again")
++store.dispatch(addTodo('WRITE',"HIGH"))
++
++showState();
++
++function showState(){
++    console.log("this is the current state");
++    console.log(store.getState());
++}
+\ No newline at end of file
+diff --git a/reducers/reducer.ts b/reducers/reducer.ts
+index 1e7edfb..7e424a1 100644
+--- a/reducers/reducer.ts
++++ b/reducers/reducer.ts
+@@ -9,8 +9,9 @@ interface ITodoState {
+     todos:Array<ITodo>
+ };
+ 
+-const defaultState:ITodoState = {
++const defaultState : ITodoState = {
+     todos: []
++
+ };
+ 
+ export default function todoReducer(state:ITodoState = defaultState, action:ITodoAction):ITodoState {
+@@ -18,9 +19,9 @@ export default function todoReducer(state:ITodoState = defaultState, action:ITod
+         case ADD_TODO:
+             return Object.assign({}, state, {
+                 todos: [
+-                    { id: generateId(), text: action.todo, completed: false },
++                    { id: generateId(), text: action.todo, completed: false, Priority : action.priority },
+                     ...state.todos
+-                ]
++                ], 
+             });
+         default:
+             return state;
+-- 
+2.17.1
+
+
+From 36c6e4a946b46ebf5ed7d283ea1d2ff6ca39ec84 Mon Sep 17 00:00:00 2001
+From: mkdirJava <mkdirjava@gmail.com>
+Date: Sat, 13 Jul 2019 07:33:01 +0100
+Subject: [PATCH 3/4]  adding in Jest
+
+---
+ JestTests/Calculator/Sum.spec.ts | 9 +++++++++
+ JestTests/Calculator/Sum.ts      | 3 +++
+ commandsRan.tst                  | 9 +++++++++
+ jest.config.js                   | 5 +++++
+ package.json                     | 5 ++++-
+ 5 files changed, 30 insertions(+), 1 deletion(-)
+ create mode 100644 JestTests/Calculator/Sum.spec.ts
+ create mode 100644 JestTests/Calculator/Sum.ts
+ create mode 100644 commandsRan.tst
+ create mode 100644 jest.config.js
+
+diff --git a/JestTests/Calculator/Sum.spec.ts b/JestTests/Calculator/Sum.spec.ts
+new file mode 100644
+index 0000000..99e99e9
+--- /dev/null
++++ b/JestTests/Calculator/Sum.spec.ts
+@@ -0,0 +1,9 @@
++import { sum } from './Sum';
++
++test('basic', () => {
++  expect(sum()).toBe(0);
++});
++
++test('basic again', () => {
++  expect(sum(1, 2)).toBe(3);
++});
+\ No newline at end of file
+diff --git a/JestTests/Calculator/Sum.ts b/JestTests/Calculator/Sum.ts
+new file mode 100644
+index 0000000..985e867
+--- /dev/null
++++ b/JestTests/Calculator/Sum.ts
+@@ -0,0 +1,3 @@
++export const sum
++  = (...a: number[]) =>
++    a.reduce((acc, val) => acc + val, 0);
+\ No newline at end of file
+diff --git a/commandsRan.tst b/commandsRan.tst
+new file mode 100644
+index 0000000..c8a98d7
+--- /dev/null
++++ b/commandsRan.tst
+@@ -0,0 +1,9 @@
++To install Jest on a Typescript project
++npm i jest @types/jest ts-jest -D
++Explanation:
++
++    Install jest framework (jest)
++    Install the types for jest (@types/jest)
++    Install the TypeScript preprocessor for jest (ts-jest) which allows jest to transpile TypeScript on the fly and have source-map support built in.
++    Save all of these to your dev dependencies (testing is almost always a npm dev-dependency)
++https://basarat.gitbooks.io/typescript/docs/testing/jest.html
+diff --git a/jest.config.js b/jest.config.js
+new file mode 100644
+index 0000000..59ec8ec
+--- /dev/null
++++ b/jest.config.js
+@@ -0,0 +1,5 @@
++module.exports = {
++    "transform": {
++      "^.+\\.tsx?$": "ts-jest"
++    },
++  }
+\ No newline at end of file
+diff --git a/package.json b/package.json
+index 36741ae..cf4bf46 100644
+--- a/package.json
++++ b/package.json
+@@ -4,11 +4,14 @@
+   "description": "",
+   "main": "index.js",
+   "scripts": {
+-    "test": "echo \"Error: no test specified\" && exit 1"
++    "test": "jest"
+   },
+   "author": "",
+   "license": "ISC",
+   "devDependencies": {
++    "@types/jest": "^24.0.15",
++    "jest": "^24.8.0",
++    "ts-jest": "^24.0.2",
+     "tslint": "^5.18.0",
+     "typescript": "^3.5.2"
+   },
+-- 
+2.17.1
+
+
+From df20c3096f87e4f05cede25ce2195a43fee5c474 Mon Sep 17 00:00:00 2001
+From: mkdirJava <mkdirjava@gmail.com>
+Date: Sat, 13 Jul 2019 07:47:46 +0100
+Subject: [PATCH 4/4] adding karama
+
+---
+ commandsRan.tst | 9 +++++++++
+ karma.conf.js   | 8 ++++++++
+ package.json    | 8 +++++++-
+ 3 files changed, 24 insertions(+), 1 deletion(-)
+ create mode 100644 karma.conf.js
+
+diff --git a/commandsRan.tst b/commandsRan.tst
+index c8a98d7..eb7f228 100644
+--- a/commandsRan.tst
++++ b/commandsRan.tst
+@@ -7,3 +7,12 @@ Explanation:
+     Install the TypeScript preprocessor for jest (ts-jest) which allows jest to transpile TypeScript on the fly and have source-map support built in.
+     Save all of these to your dev dependencies (testing is almost always a npm dev-dependency)
+ https://basarat.gitbooks.io/typescript/docs/testing/jest.html
++
++To install Karama more info look to 
++http://karma-runner.github.io/4.0/config/configuration-file.html
++
++# Install Karma:
++$ npm install karma --save-dev
++
++# Install plugins that your project needs:
++$ npm install karma-jasmine karma-chrome-launcher karma-firefox-launcher  jasmine-core --save-dev
+diff --git a/karma.conf.js b/karma.conf.js
+new file mode 100644
+index 0000000..d04e4dc
+--- /dev/null
++++ b/karma.conf.js
+@@ -0,0 +1,8 @@
++module.exports = function(config) {
++    config.set({
++      basePath: '../..',
++      frameworks: ['jasmine'],
++      browsers : ['Chrome', 'Firefox']
++      //...
++    });
++  };
+\ No newline at end of file
+diff --git a/package.json b/package.json
+index cf4bf46..9f30f16 100644
+--- a/package.json
++++ b/package.json
+@@ -4,13 +4,19 @@
+   "description": "",
+   "main": "index.js",
+   "scripts": {
+-    "test": "jest"
++    "test": "jest",
++    "karma": "./node_modules/karma/bin/karma start"
+   },
+   "author": "",
+   "license": "ISC",
+   "devDependencies": {
+     "@types/jest": "^24.0.15",
++    "jasmine-core": "^3.4.0",
+     "jest": "^24.8.0",
++    "karma": "^4.2.0",
++    "karma-chrome-launcher": "^3.0.0",
++    "karma-firefox-launcher": "^1.1.0",
++    "karma-jasmine": "^2.0.1",
+     "ts-jest": "^24.0.2",
+     "tslint": "^5.18.0",
+     "typescript": "^3.5.2"
+-- 
+2.17.1
+
