@@ -28,5 +28,14 @@ npm install cypress webpack @cypress/webpack-preprocessor typescript ts-loader
 
 This is to add in React
 npm install react react-dom --save
+npm install --save-dev @types/react @types/react-dom
+
 This is to install webpack
-npm install webpack webpack-dev-server webpack-cli --save
+npm install webpack  webpack-cli --save
+
+omit typescript if already installed
+npm install --save-dev typescript ts-loader source-map-loader
+
+
+To get webpack dev server
+npm install --save-dev html-webpack-plugin webpack-dev-server

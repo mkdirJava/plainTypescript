@@ -1,4 +1,6 @@
 import { sum } from './Sum';
+import toBe from 'ts-jest'
+
 
 test('basic', () => {
   expect(sum()).toBe(0);
