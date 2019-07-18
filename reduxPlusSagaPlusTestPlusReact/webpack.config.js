@@ -1,3 +1,5 @@
+
+var path = require("path");
 module.exports = {
     mode: "production",
 
@@ -6,7 +8,7 @@ module.exports = {
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".ts", ".tsx"]
+        extensions: [".ts", ".tsx", ".js"]
     },
 
     module: {
@@ -27,6 +29,11 @@ module.exports = {
                 loader: "source-map-loader"
             }
         ]
+    },
+    
+    devServer: {
+        contentBase: path.join(__dirname, "./dist/"),
+        port: 9000
     },
 
     // When importing a module whose path matches one of the following, just
