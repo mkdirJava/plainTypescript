@@ -8,7 +8,7 @@ Explanation:
     Save all of these to your dev dependencies (testing is almost always a npm dev-dependency)
 https://basarat.gitbooks.io/typescript/docs/testing/jest.html
 
-To install Karama more info look to 
+To install Karama more info look to
 http://karma-runner.github.io/4.0/config/configuration-file.html
 
 # Install Karma:
@@ -22,7 +22,7 @@ $ npm install karma-jasmine karma-chrome-launcher karma-firefox-launcher  jasmin
 This is for Cypress io
 
 npm install cypress --save-dev @cypress/webpack-preprocessor typescript ts-loader webpack
-# If this is from a blank project 
+# If this is from a blank project
 npm install cypress webpack @cypress/webpack-preprocessor typescript ts-loader
 
 
@@ -39,3 +39,7 @@ npm install --save-dev typescript ts-loader source-map-loader
 
 To get webpack dev server
 npm install --save-dev html-webpack-plugin webpack-dev-server
+
+# to run:
+npx webpack
+This will generate the minified js files nested by /index.js 
